@@ -139,6 +139,7 @@
             list = _this$props$list === void 0 ? [] : _this$props$list,
             _this$props$duration = _this$props.duration,
             duration = _this$props$duration === void 0 ? 1000 : _this$props$duration,
+            direction = _this$props.direction,
             _this$props$playbackR = _this$props.playbackRate,
             playbackRate = _this$props$playbackR === void 0 ? 1 : _this$props$playbackR,
             _this$props$autoPlay = _this$props.autoPlay,
@@ -149,7 +150,6 @@
         if (list.length) {
           var count = 0,
               total = 0,
-              len = 0,
               sr = this.shadowRoot;
           list.forEach(function (item) {
             var _item$row = item.row,
@@ -162,50 +162,97 @@
             item.column = column;
             item.number = number;
             total += number;
-            len++;
-          });
+          }); // 计算每个所占时长
+
           var per = duration / total;
           list.forEach(function (item) {
             item.begin = count;
             item.end = count += per * item.number;
-          });
+          }); // 反向也需要
+
+          count = 0;
+          list.reverse().forEach(function (item) {
+            item.begin2 = count;
+            item.end2 = count += per * item.number;
+          }); // 帧动画部分
+
+          var alternate = 1,
+              first = true;
           this.__count = 0;
           sr.frameAnimate(function (diff) {
-            if (!_this.__isPlay) {
+            if (!_this.__isPlay && !first) {
               return;
             }
 
+            first = false;
             _this.__count += diff * _this.playbackRate;
 
-            if (_this.__count >= duration) {
+            while (_this.__count >= duration) {
               _this.__count -= duration;
+
+              if (direction === 'alternate') {
+                alternate *= -1;
+              }
             }
 
-            for (var i = 0; i < len; i++) {
-              var item = list[i];
+            if (alternate === -1) {
+              for (var i = 0; i < list.length; i++) {
+                var item = list[i];
 
-              if (_this.__count >= item.begin && _this.__count < item.end) {
-                var percent = (_this.__count - item.begin) / (item.end - item.begin);
+                if (_this.__count >= item.begin2 && _this.__count < item.end2) {
+                  var percent = (_this.__count - item.begin2) / (item.end2 - item.begin2);
 
-                var _per = 1 / item.number;
+                  var _per = 1 / item.number;
 
-                var n = Math.floor(percent / _per);
+                  var n = Math.floor(percent / _per);
 
-                if (n > item.number) {
-                  n = item.number - 1;
+                  if (n > item.number) {
+                    n = item.number - 1;
+                  }
+
+                  var x = n % item.column;
+                  var y = Math.floor(n / item.column);
+                  x = item.column - x - 1;
+                  sr.updateStyle({
+                    backgroundImage: "url(".concat(item.url, ")"),
+                    backgroundSize: "".concat(item.column * 100, "% ").concat(item.row * 100, "%"),
+                    backgroundPositionX: x * 100 / (item.column - 1) + '%',
+                    backgroundPositionY: y * 100 / (item.row - 1) + '%'
+                  }, function () {
+                    _this.emit('frame');
+                  });
+                  break;
                 }
+              }
+            } else {
+              for (var _i = 0; _i < list.length; _i++) {
+                var _item = list[_i];
 
-                var x = n % item.column;
-                var y = Math.floor(n / item.column);
-                sr.updateStyle({
-                  backgroundImage: "url(".concat(item.url, ")"),
-                  backgroundSize: "".concat(item.column * 100, "% ").concat(item.row * 100, "%"),
-                  backgroundPositionX: x * 100 / (item.column - 1) + '%',
-                  backgroundPositionY: y * 100 / (item.row - 1) + '%'
-                }, function () {
-                  _this.emit('frame');
-                });
-                break;
+                if (_this.__count >= _item.begin && _this.__count < _item.end) {
+                  var _percent = (_this.__count - _item.begin) / (_item.end - _item.begin);
+
+                  var _per2 = 1 / _item.number;
+
+                  var _n = Math.floor(_percent / _per2);
+
+                  if (_n > _item.number) {
+                    _n = _item.number - 1;
+                  }
+
+                  var _x = _n % _item.column;
+
+                  var _y = Math.floor(_n / _item.column);
+
+                  sr.updateStyle({
+                    backgroundImage: "url(".concat(_item.url, ")"),
+                    backgroundSize: "".concat(_item.column * 100, "% ").concat(_item.row * 100, "%"),
+                    backgroundPositionX: _x * 100 / (_item.column - 1) + '%',
+                    backgroundPositionY: _y * 100 / (_item.row - 1) + '%'
+                  }, function () {
+                    _this.emit('frame');
+                  });
+                  break;
+                }
               }
             }
           });

@@ -12,14 +12,14 @@
 <pre><code class="brush:csx"></code></pre>
 <script type="text/jsx">
   karas.render(
-    <canvas width="360" height="360">
+    <canvas width="720" height="720">
       <FrameAnimate
         style={{
           position: 'absolute',
           left: '50%',
           top: '50%',
-          width: 200,
-          height: 200,
+          width: 300,
+          height: 300,
           translateX: '-50%',
           translateY: '-50%',
         }}
@@ -29,10 +29,10 @@
           column: 9, // 图片有几列
           number: 9, // 总帧数，默认${row} * ${column}，特殊情况下如多行最后一行数量不满传入自定义总数
         }]}
-        duration={500} // 动画时长
-        direction={'normal'} // 动画轮播方向，默认normal正向结束后从头开始，alternate会在正向结束后反向
-        playbackRate={1} // 播放速率
-        autoPlay={true} // 自动播放
+        duration={500}
+        direction={'alternate'}
+        playbackRate={1}
+        autoPlay={true}
       />
     </canvas>,
     '#test'
