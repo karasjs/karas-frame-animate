@@ -2,7 +2,7 @@
 FrameAnimate component for karas.
 
 ---
-karas粒子发射组件。
+karas帧动画组件。
 
 [![NPM version](https://img.shields.io/npm/v/karas-frame-animate.svg)](https://npmjs.org/package/karas-frame-animate)
 
