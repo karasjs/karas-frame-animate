@@ -4,11 +4,12 @@ import { version } from '../package.json';
 class FrameAnimate extends karas.Component {
   constructor(props) {
     super(props);
-    let { duration = 1000, direction, playbackRate = 1, iterations = Infinity, } = this.props;
+    let { duration = 1000, direction, delay = 0, playbackRate = 1, iterations = Infinity, } = this.props;
     this.duration = duration;
     this.direction = direction;
     this.playbackRate = playbackRate;
     this.iterations = iterations;
+    this.delay = delay;
   }
   componentDidMount() {
     let { list = [], autoPlay = true } = this.props;
@@ -35,29 +36,30 @@ class FrameAnimate extends karas.Component {
         item.end2 = count += per * item.number;
       });
       // 帧动画部分
-      let alternate = 1;
+      let alternate = false;
       this.__timeCount = 0;
-      this.__playCount = 0;
       sr.frameAnimate(diff => {
         if(!this.__isPlay) {
           return;
         }
-        this.__timeCount += diff * this.playbackRate;
-        while(this.__timeCount >= this.duration) {
-          this.__timeCount -= this.duration;
-          this.__playCount++;
-          if(this.direction === 'alternate') {
-            alternate *= -1;
-          }
+        let currentTime = this.__timeCount += diff * this.playbackRate;
+        currentTime -= this.delay;
+        let playCount = 0;
+        while(currentTime >= this.duration) {
+          currentTime -= this.duration;
+          playCount++;
         }
-        if(this.__playCount >= this.iterations) {
+        if(playCount >= this.iterations) {
           return;
         }
-        if(alternate === -1) {
+        if(this.direction === 'alternate') {
+          alternate = playCount % 2 === 1;
+        }
+        if(alternate) {
           for(let i = 0; i < list.length; i++) {
             let item = list[i];
-            if(this.__timeCount >= item.begin2 && this.__timeCount < item.end2) {
-              let percent = (this.__timeCount - item.begin2) / (item.end2 - item.begin2);
+            if(currentTime >= item.begin2 && currentTime < item.end2) {
+              let percent = (currentTime - item.begin2) / (item.end2 - item.begin2);
               let per = 1 / item.number;
               let n = Math.floor(percent / per);
               if(n > item.number) {
@@ -81,8 +83,8 @@ class FrameAnimate extends karas.Component {
         else {
           for(let i = 0; i < list.length; i++) {
             let item = list[i];
-            if(this.__timeCount >= item.begin && this.__timeCount < item.end) {
-              let percent = (this.__timeCount - item.begin) / (item.end - item.begin);
+            if(currentTime >= item.begin && currentTime < item.end) {
+              let percent = (currentTime - item.begin) / (item.end - item.begin);
               let per = 1 / item.number;
               let n = Math.floor(percent / per);
               if(n > item.number) {
@@ -113,7 +115,6 @@ class FrameAnimate extends karas.Component {
   play() {
     this.__isPlay = true;
     this.__timeCount = 0;
-    this.__playCount = 0;
   }
 
   pause() {
@@ -129,7 +130,11 @@ class FrameAnimate extends karas.Component {
   }
 
   set duration(v) {
-    this.__duration = parseInt(v) || 1000;
+    v = parseFloat(v) || 1000;
+    if(v <= 0) {
+      v = 1;
+    }
+    this.__duration = v;
   }
 
   get playbackRate() {
@@ -164,6 +169,14 @@ class FrameAnimate extends karas.Component {
       v = 1;
     }
     this.__iterations = v;
+  }
+
+  get delay() {
+    return this.__delay;
+  }
+
+  set delay(v) {
+    this.__delay = parseInt(v) || 0;
   }
 }
 

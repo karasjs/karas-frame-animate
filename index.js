@@ -116,7 +116,7 @@
     };
   }
 
-  var version = "0.1.0";
+  var version = "0.1.1";
 
   var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     _inherits(FrameAnimate, _karas$Component);
@@ -133,6 +133,8 @@
           _this$props$duration = _this$props.duration,
           duration = _this$props$duration === void 0 ? 1000 : _this$props$duration,
           direction = _this$props.direction,
+          _this$props$delay = _this$props.delay,
+          delay = _this$props$delay === void 0 ? 0 : _this$props$delay,
           _this$props$playbackR = _this$props.playbackRate,
           playbackRate = _this$props$playbackR === void 0 ? 1 : _this$props$playbackR,
           _this$props$iteration = _this$props.iterations,
@@ -141,6 +143,7 @@
       _this.direction = direction;
       _this.playbackRate = playbackRate;
       _this.iterations = iterations;
+      _this.delay = delay;
       return _this;
     }
 
@@ -185,35 +188,36 @@
             item.end2 = count += per * item.number;
           }); // 帧动画部分
 
-          var alternate = 1;
+          var alternate = false;
           this.__timeCount = 0;
-          this.__playCount = 0;
           sr.frameAnimate(function (diff) {
             if (!_this2.__isPlay) {
               return;
             }
 
-            _this2.__timeCount += diff * _this2.playbackRate;
+            var currentTime = _this2.__timeCount += diff * _this2.playbackRate;
+            currentTime -= _this2.delay;
+            var playCount = 0;
 
-            while (_this2.__timeCount >= _this2.duration) {
-              _this2.__timeCount -= _this2.duration;
-              _this2.__playCount++;
-
-              if (_this2.direction === 'alternate') {
-                alternate *= -1;
-              }
+            while (currentTime >= _this2.duration) {
+              currentTime -= _this2.duration;
+              playCount++;
             }
 
-            if (_this2.__playCount >= _this2.iterations) {
+            if (playCount >= _this2.iterations) {
               return;
             }
 
-            if (alternate === -1) {
+            if (_this2.direction === 'alternate') {
+              alternate = playCount % 2 === 1;
+            }
+
+            if (alternate) {
               for (var i = 0; i < list.length; i++) {
                 var item = list[i];
 
-                if (_this2.__timeCount >= item.begin2 && _this2.__timeCount < item.end2) {
-                  var percent = (_this2.__timeCount - item.begin2) / (item.end2 - item.begin2);
+                if (currentTime >= item.begin2 && currentTime < item.end2) {
+                  var percent = (currentTime - item.begin2) / (item.end2 - item.begin2);
 
                   var _per = 1 / item.number;
 
@@ -241,8 +245,8 @@
               for (var _i = 0; _i < list.length; _i++) {
                 var _item = list[_i];
 
-                if (_this2.__timeCount >= _item.begin && _this2.__timeCount < _item.end) {
-                  var _percent = (_this2.__timeCount - _item.begin) / (_item.end - _item.begin);
+                if (currentTime >= _item.begin && currentTime < _item.end) {
+                  var _percent = (currentTime - _item.begin) / (_item.end - _item.begin);
 
                   var _per2 = 1 / _item.number;
 
@@ -281,7 +285,6 @@
       value: function play() {
         this.__isPlay = true;
         this.__timeCount = 0;
-        this.__playCount = 0;
       }
     }, {
       key: "pause",
@@ -299,7 +302,13 @@
         return this.__duration;
       },
       set: function set(v) {
-        this.__duration = parseInt(v) || 1000;
+        v = parseFloat(v) || 1000;
+
+        if (v <= 0) {
+          v = 1;
+        }
+
+        this.__duration = v;
       }
     }, {
       key: "playbackRate",
@@ -338,6 +347,14 @@
         }
 
         this.__iterations = v;
+      }
+    }, {
+      key: "delay",
+      get: function get() {
+        return this.__delay;
+      },
+      set: function set(v) {
+        this.__delay = parseInt(v) || 0;
       }
     }]);
 
