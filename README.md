@@ -49,7 +49,10 @@ karas.render(
 * play() 从头播放
 
 ### get/set
-* playbackRate 播放速率
+* duration 播放时长，单位ms，默认`1000`
+* playbackRate 播放速率，默认`1`
+* direction 播放方向，传`alternate`为来回反复
+* iterations 播放次数，超过次数停止，默认`Infinity`
 
 ### event
 * frame 每次刷新后触发

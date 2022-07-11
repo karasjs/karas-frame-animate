@@ -2,9 +2,16 @@ import karas from 'karas';
 import { version } from '../package.json';
 
 class FrameAnimate extends karas.Component {
+  constructor(props) {
+    super(props);
+    let { duration = 1000, direction, playbackRate = 1, iterations = Infinity, } = this.props;
+    this.duration = duration;
+    this.direction = direction;
+    this.playbackRate = playbackRate;
+    this.iterations = iterations;
+  }
   componentDidMount() {
-    let { list = [], duration = 1000, direction, playbackRate = 1, autoPlay = true } = this.props;
-    this.__playbackRate = playbackRate;
+    let { list = [], autoPlay = true } = this.props;
     this.__isPlay = autoPlay;
     if(list.length) {
       let count = 0, total = 0, sr = this.shadowRoot;
@@ -16,7 +23,7 @@ class FrameAnimate extends karas.Component {
         total += number;
       });
       // 计算每个所占时长
-      let per = duration / total;
+      let per = this.duration / total;
       list.forEach(item => {
         item.begin = count;
         item.end = count += per * item.number;
@@ -28,25 +35,29 @@ class FrameAnimate extends karas.Component {
         item.end2 = count += per * item.number;
       });
       // 帧动画部分
-      let alternate = 1, first = true;
-      this.__count = 0;
+      let alternate = 1;
+      this.__timeCount = 0;
+      this.__playCount = 0;
       sr.frameAnimate(diff => {
-        if(!this.__isPlay && !first) {
+        if(!this.__isPlay) {
           return;
         }
-        first = false;
-        this.__count += diff * this.playbackRate;
-        while(this.__count >= duration) {
-          this.__count -= duration;
-          if(direction === 'alternate') {
+        this.__timeCount += diff * this.playbackRate;
+        while(this.__timeCount >= this.duration) {
+          this.__timeCount -= this.duration;
+          this.__playCount++;
+          if(this.direction === 'alternate') {
             alternate *= -1;
           }
+        }
+        if(this.__playCount >= this.iterations) {
+          return;
         }
         if(alternate === -1) {
           for(let i = 0; i < list.length; i++) {
             let item = list[i];
-            if(this.__count >= item.begin2 && this.__count < item.end2) {
-              let percent = (this.__count - item.begin2) / (item.end2 - item.begin2);
+            if(this.__timeCount >= item.begin2 && this.__timeCount < item.end2) {
+              let percent = (this.__timeCount - item.begin2) / (item.end2 - item.begin2);
               let per = 1 / item.number;
               let n = Math.floor(percent / per);
               if(n > item.number) {
@@ -70,8 +81,8 @@ class FrameAnimate extends karas.Component {
         else {
           for(let i = 0; i < list.length; i++) {
             let item = list[i];
-            if(this.__count >= item.begin && this.__count < item.end) {
-              let percent = (this.__count - item.begin) / (item.end - item.begin);
+            if(this.__timeCount >= item.begin && this.__timeCount < item.end) {
+              let percent = (this.__timeCount - item.begin) / (item.end - item.begin);
               let per = 1 / item.number;
               let n = Math.floor(percent / per);
               if(n > item.number) {
@@ -101,7 +112,8 @@ class FrameAnimate extends karas.Component {
 
   play() {
     this.__isPlay = true;
-    this.__count = 0;
+    this.__timeCount = 0;
+    this.__playCount = 0;
   }
 
   pause() {
@@ -112,12 +124,46 @@ class FrameAnimate extends karas.Component {
     this.__isPlay = true;
   }
 
+  get duration() {
+    return this.__duration;
+  }
+
+  set duration(v) {
+    this.__duration = parseInt(v) || 1000;
+  }
+
   get playbackRate() {
-    return this.__playbackRate || this.props.playbackRate || 1;
+    return this.__playbackRate;
   }
 
   set playbackRate(v) {
-    this.__playbackRate = parseFloat(v) || 1;
+    v = parseFloat(v) || 1;
+    if(v <= 0) {
+      v = 1;
+    }
+    this.__playbackRate = v;
+  }
+
+  get direction() {
+    return this.__direction;
+  }
+
+  set direction(v) {
+    this.__direction = v;
+  }
+
+  get iterations() {
+    return this.__iterations;
+  }
+
+  set iterations(v) {
+    if(v !== Infinity) {
+      v = parseInt(v) || 1;
+    }
+    if(v <= 0) {
+      v = 1;
+    }
+    this.__iterations = v;
   }
 }
 

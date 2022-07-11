@@ -108,35 +108,44 @@ function _createSuper(Derived) {
   };
 }
 
-var version = "0.0.1";
+var version = "0.1.0";
 
 var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
   _inherits(FrameAnimate, _karas$Component);
 
   var _super = _createSuper(FrameAnimate);
 
-  function FrameAnimate() {
+  function FrameAnimate(props) {
+    var _this;
+
     _classCallCheck(this, FrameAnimate);
 
-    return _super.apply(this, arguments);
+    _this = _super.call(this, props);
+    var _this$props = _this.props,
+        _this$props$duration = _this$props.duration,
+        duration = _this$props$duration === void 0 ? 1000 : _this$props$duration,
+        direction = _this$props.direction,
+        _this$props$playbackR = _this$props.playbackRate,
+        playbackRate = _this$props$playbackR === void 0 ? 1 : _this$props$playbackR,
+        _this$props$iteration = _this$props.iterations,
+        iterations = _this$props$iteration === void 0 ? Infinity : _this$props$iteration;
+    _this.duration = duration;
+    _this.direction = direction;
+    _this.playbackRate = playbackRate;
+    _this.iterations = iterations;
+    return _this;
   }
 
   _createClass(FrameAnimate, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this = this;
+      var _this2 = this;
 
-      var _this$props = this.props,
-          _this$props$list = _this$props.list,
-          list = _this$props$list === void 0 ? [] : _this$props$list,
-          _this$props$duration = _this$props.duration,
-          duration = _this$props$duration === void 0 ? 1000 : _this$props$duration,
-          direction = _this$props.direction,
-          _this$props$playbackR = _this$props.playbackRate,
-          playbackRate = _this$props$playbackR === void 0 ? 1 : _this$props$playbackR,
-          _this$props$autoPlay = _this$props.autoPlay,
-          autoPlay = _this$props$autoPlay === void 0 ? true : _this$props$autoPlay;
-      this.__playbackRate = playbackRate;
+      var _this$props2 = this.props,
+          _this$props2$list = _this$props2.list,
+          list = _this$props2$list === void 0 ? [] : _this$props2$list,
+          _this$props2$autoPlay = _this$props2.autoPlay,
+          autoPlay = _this$props2$autoPlay === void 0 ? true : _this$props2$autoPlay;
       this.__isPlay = autoPlay;
 
       if (list.length) {
@@ -156,7 +165,7 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
           total += number;
         }); // 计算每个所占时长
 
-        var per = duration / total;
+        var per = this.duration / total;
         list.forEach(function (item) {
           item.begin = count;
           item.end = count += per * item.number;
@@ -168,31 +177,35 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
           item.end2 = count += per * item.number;
         }); // 帧动画部分
 
-        var alternate = 1,
-            first = true;
-        this.__count = 0;
+        var alternate = 1;
+        this.__timeCount = 0;
+        this.__playCount = 0;
         sr.frameAnimate(function (diff) {
-          if (!_this.__isPlay && !first) {
+          if (!_this2.__isPlay) {
             return;
           }
 
-          first = false;
-          _this.__count += diff * _this.playbackRate;
+          _this2.__timeCount += diff * _this2.playbackRate;
 
-          while (_this.__count >= duration) {
-            _this.__count -= duration;
+          while (_this2.__timeCount >= _this2.duration) {
+            _this2.__timeCount -= _this2.duration;
+            _this2.__playCount++;
 
-            if (direction === 'alternate') {
+            if (_this2.direction === 'alternate') {
               alternate *= -1;
             }
+          }
+
+          if (_this2.__playCount >= _this2.iterations) {
+            return;
           }
 
           if (alternate === -1) {
             for (var i = 0; i < list.length; i++) {
               var item = list[i];
 
-              if (_this.__count >= item.begin2 && _this.__count < item.end2) {
-                var percent = (_this.__count - item.begin2) / (item.end2 - item.begin2);
+              if (_this2.__timeCount >= item.begin2 && _this2.__timeCount < item.end2) {
+                var percent = (_this2.__timeCount - item.begin2) / (item.end2 - item.begin2);
 
                 var _per = 1 / item.number;
 
@@ -211,7 +224,7 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
                   backgroundPositionX: x * 100 / (item.column - 1) + '%',
                   backgroundPositionY: y * 100 / (item.row - 1) + '%'
                 }, function () {
-                  _this.emit('frame');
+                  _this2.emit('frame');
                 });
                 break;
               }
@@ -220,8 +233,8 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
             for (var _i = 0; _i < list.length; _i++) {
               var _item = list[_i];
 
-              if (_this.__count >= _item.begin && _this.__count < _item.end) {
-                var _percent = (_this.__count - _item.begin) / (_item.end - _item.begin);
+              if (_this2.__timeCount >= _item.begin && _this2.__timeCount < _item.end) {
+                var _percent = (_this2.__timeCount - _item.begin) / (_item.end - _item.begin);
 
                 var _per2 = 1 / _item.number;
 
@@ -241,7 +254,7 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
                   backgroundPositionX: _x * 100 / (_item.column - 1) + '%',
                   backgroundPositionY: _y * 100 / (_item.row - 1) + '%'
                 }, function () {
-                  _this.emit('frame');
+                  _this2.emit('frame');
                 });
                 break;
               }
@@ -259,7 +272,8 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     key: "play",
     value: function play() {
       this.__isPlay = true;
-      this.__count = 0;
+      this.__timeCount = 0;
+      this.__playCount = 0;
     }
   }, {
     key: "pause",
@@ -272,12 +286,50 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
       this.__isPlay = true;
     }
   }, {
-    key: "playbackRate",
+    key: "duration",
     get: function get() {
-      return this.__playbackRate || this.props.playbackRate || 1;
+      return this.__duration;
     },
     set: function set(v) {
-      this.__playbackRate = parseFloat(v) || 1;
+      this.__duration = parseInt(v) || 1000;
+    }
+  }, {
+    key: "playbackRate",
+    get: function get() {
+      return this.__playbackRate;
+    },
+    set: function set(v) {
+      v = parseFloat(v) || 1;
+
+      if (v <= 0) {
+        v = 1;
+      }
+
+      this.__playbackRate = v;
+    }
+  }, {
+    key: "direction",
+    get: function get() {
+      return this.__direction;
+    },
+    set: function set(v) {
+      this.__direction = v;
+    }
+  }, {
+    key: "iterations",
+    get: function get() {
+      return this.__iterations;
+    },
+    set: function set(v) {
+      if (v !== Infinity) {
+        v = parseInt(v) || 1;
+      }
+
+      if (v <= 0) {
+        v = 1;
+      }
+
+      this.__iterations = v;
     }
   }]);
 
