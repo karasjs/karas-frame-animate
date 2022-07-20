@@ -116,7 +116,7 @@
     };
   }
 
-  var version = "0.1.1";
+  var version = "0.2.0";
 
   var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     _inherits(FrameAnimate, _karas$Component);
@@ -138,12 +138,15 @@
           _this$props$playbackR = _this$props.playbackRate,
           playbackRate = _this$props$playbackR === void 0 ? 1 : _this$props$playbackR,
           _this$props$iteration = _this$props.iterations,
-          iterations = _this$props$iteration === void 0 ? Infinity : _this$props$iteration;
+          iterations = _this$props$iteration === void 0 ? Infinity : _this$props$iteration,
+          _this$props$fill = _this$props.fill,
+          fill = _this$props$fill === void 0 ? 'both' : _this$props$fill;
       _this.duration = duration;
       _this.direction = direction;
       _this.playbackRate = playbackRate;
       _this.iterations = iterations;
       _this.delay = delay;
+      _this.fill = fill;
       return _this;
     }
 
@@ -205,6 +208,14 @@
             }
 
             if (playCount >= _this2.iterations) {
+              _this2.__isPlay = false;
+
+              if (_this2.fill !== 'both' && _this2.fill !== 'forwards') {
+                sr.updateStyle({
+                  backgroundImage: null
+                });
+              }
+
               return;
             }
 
@@ -278,6 +289,27 @@
     }, {
       key: "render",
       value: function render() {
+        var fill = this.fill;
+
+        if (fill === 'both' || fill === 'backwards') {
+          var first = (this.props.list || [])[0];
+
+          if (first) {
+            var _first$row = first.row,
+                row = _first$row === void 0 ? 1 : _first$row,
+                _first$column = first.column,
+                column = _first$column === void 0 ? 1 : _first$column;
+            return karas__default["default"].createElement("div", {
+              style: {
+                backgroundImage: "url(".concat(first.url, ")"),
+                backgroundSize: "".concat(column * 100, "% ").concat(row * 100, "%"),
+                backgroundPositionX: 0,
+                backgroundPositionY: 0
+              }
+            });
+          }
+        }
+
         return karas__default["default"].createElement("div", null);
       }
     }, {
@@ -355,6 +387,14 @@
       },
       set: function set(v) {
         this.__delay = parseInt(v) || 0;
+      }
+    }, {
+      key: "fill",
+      get: function get() {
+        return this.__fill;
+      },
+      set: function set(v) {
+        this.__fill = v;
       }
     }]);
 

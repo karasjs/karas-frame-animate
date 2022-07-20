@@ -4,13 +4,22 @@ import { version } from '../package.json';
 class FrameAnimate extends karas.Component {
   constructor(props) {
     super(props);
-    let { duration = 1000, direction, delay = 0, playbackRate = 1, iterations = Infinity, } = this.props;
+    let {
+      duration = 1000,
+      direction,
+      delay = 0,
+      playbackRate = 1,
+      iterations = Infinity,
+      fill = 'both',
+    } = this.props;
     this.duration = duration;
     this.direction = direction;
     this.playbackRate = playbackRate;
     this.iterations = iterations;
     this.delay = delay;
+    this.fill = fill;
   }
+
   componentDidMount() {
     let { list = [], autoPlay = true } = this.props;
     this.__isPlay = autoPlay;
@@ -50,6 +59,12 @@ class FrameAnimate extends karas.Component {
           playCount++;
         }
         if(playCount >= this.iterations) {
+          this.__isPlay = false;
+          if(this.fill !== 'both' && this.fill !== 'forwards') {
+            sr.updateStyle({
+              backgroundImage: null,
+            });
+          }
           return;
         }
         if(this.direction === 'alternate') {
@@ -109,6 +124,19 @@ class FrameAnimate extends karas.Component {
   }
 
   render() {
+    let fill = this.fill;
+    if(fill === 'both' || fill === 'backwards') {
+      let first = (this.props.list || [])[0];
+      if(first) {
+        let { row = 1, column = 1 } = first;
+        return <div style={{
+          backgroundImage: `url(${first.url})`,
+          backgroundSize: `${column * 100}% ${row * 100}%`,
+          backgroundPositionX: 0,
+          backgroundPositionY: 0,
+        }}/>;
+      }
+    }
     return <div/>;
   }
 
@@ -177,6 +205,14 @@ class FrameAnimate extends karas.Component {
 
   set delay(v) {
     this.__delay = parseInt(v) || 0;
+  }
+
+  get fill() {
+    return this.__fill;
+  }
+
+  set fill(v) {
+    this.__fill = v;
   }
 }
 

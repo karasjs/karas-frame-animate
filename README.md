@@ -53,6 +53,7 @@ karas.render(
 * playbackRate 播放速率，默认`1`
 * direction 播放方向，传`alternate`为来回反复
 * iterations 播放次数，超过次数停止，默认`Infinity`
+* fill 动画开始前结束后是否停留，默认`both`，可选`forwards`、`backwards`
 
 ### event
 * frame 每次刷新后触发
