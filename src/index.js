@@ -149,6 +149,43 @@ class FrameAnimate extends karas.Component {
     this.__isPlay = false;
   }
 
+  pauseTo(n = 0) {
+    this.__isPlay = false;
+    let { list = [] } = this.props;
+    let count = 0;
+    for(let i = 0, len = list.length; i < len; i++) {
+      let item = list[i];
+      let { row = 1, column = 1, number = row * column } = item;
+      if(n < count + number) {
+        n -= count;
+        let x = n % column;
+        let y = Math.floor(n / column);
+        this.shadowRoot.updateStyle({
+          backgroundImage: `url(${item.url})`,
+          backgroundSize: `${column * 100}% ${row * 100}%`,
+          backgroundPositionX: x * 100 / (item.column - 1) + '%',
+          backgroundPositionY: y * 100 / (item.row - 1) + '%',
+        });
+        break;
+      }
+    }
+  }
+
+  stop() {
+    this.__isPlay = false;
+    this.__timeCount = 0;
+    let first = (this.props.list || [])[0];
+    if(first) {
+      let { row = 1, column = 1 } = first;
+      this.shadowRoot.updateStyle({
+        backgroundImage: `url(${first.url})`,
+        backgroundSize: `${column * 100}% ${row * 100}%`,
+        backgroundPositionX: 0,
+        backgroundPositionY: 0,
+      });
+    }
+  }
+
   resume() {
     this.__isPlay = true;
   }

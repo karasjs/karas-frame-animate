@@ -45,7 +45,7 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
-var version = "0.3.0";
+var version = "0.4.0";
 
 var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
   _inherits(FrameAnimate, _karas$Component);
@@ -247,6 +247,58 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     key: "pause",
     value: function pause() {
       this.__isPlay = false;
+    }
+  }, {
+    key: "pauseTo",
+    value: function pauseTo() {
+      var n = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+      this.__isPlay = false;
+      var _this$props$list = this.props.list,
+          list = _this$props$list === void 0 ? [] : _this$props$list;
+      var count = 0;
+
+      for (var i = 0, len = list.length; i < len; i++) {
+        var item = list[i];
+        var _item$row2 = item.row,
+            row = _item$row2 === void 0 ? 1 : _item$row2,
+            _item$column2 = item.column,
+            column = _item$column2 === void 0 ? 1 : _item$column2,
+            _item$number2 = item.number,
+            number = _item$number2 === void 0 ? row * column : _item$number2;
+
+        if (n < count + number) {
+          n -= count;
+          var x = n % column;
+          var y = Math.floor(n / column);
+          this.shadowRoot.updateStyle({
+            backgroundImage: "url(".concat(item.url, ")"),
+            backgroundSize: "".concat(column * 100, "% ").concat(row * 100, "%"),
+            backgroundPositionX: x * 100 / (item.column - 1) + '%',
+            backgroundPositionY: y * 100 / (item.row - 1) + '%'
+          });
+          break;
+        }
+      }
+    }
+  }, {
+    key: "stop",
+    value: function stop() {
+      this.__isPlay = false;
+      this.__timeCount = 0;
+      var first = (this.props.list || [])[0];
+
+      if (first) {
+        var _first$row2 = first.row,
+            row = _first$row2 === void 0 ? 1 : _first$row2,
+            _first$column2 = first.column,
+            column = _first$column2 === void 0 ? 1 : _first$column2;
+        this.shadowRoot.updateStyle({
+          backgroundImage: "url(".concat(first.url, ")"),
+          backgroundSize: "".concat(column * 100, "% ").concat(row * 100, "%"),
+          backgroundPositionX: 0,
+          backgroundPositionY: 0
+        });
+      }
     }
   }, {
     key: "resume",
