@@ -83,6 +83,7 @@ class FrameAnimate extends karas.Component {
               let x = n % item.column;
               let y = Math.floor(n / item.column);
               x = item.column - x - 1;
+              y = item.row - y - 1;
               sr.updateStyle({
                 backgroundImage: `url(${item.url})`,
                 backgroundSize: `${item.column * 100}% ${item.row * 100}%`,

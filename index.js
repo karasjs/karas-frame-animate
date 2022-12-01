@@ -53,7 +53,7 @@
     return _setPrototypeOf(o, p);
   }
 
-  var version = "0.4.0";
+  var version = "0.4.1";
 
   var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     _inherits(FrameAnimate, _karas$Component);
@@ -174,6 +174,7 @@
                   var x = n % item.column;
                   var y = Math.floor(n / item.column);
                   x = item.column - x - 1;
+                  y = item.row - y - 1;
                   sr.updateStyle({
                     backgroundImage: "url(".concat(item.url, ")"),
                     backgroundSize: "".concat(item.column * 100, "% ").concat(item.row * 100, "%"),
