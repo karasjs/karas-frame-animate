@@ -53,7 +53,7 @@
     return _setPrototypeOf(o, p);
   }
 
-  var version = "0.4.1";
+  var version = "0.4.2";
 
   var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     _inherits(FrameAnimate, _karas$Component);
