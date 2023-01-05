@@ -11,40 +11,49 @@
 <div id="test"></div>
 <pre><code class="brush:csx"></code></pre>
 <script type="text/jsx">
-  karas.render(
-    <canvas width="720" height="720">
+  let root = karas.render(
+    <webgl width="1000" height="1000">
       <FrameAnimate
         style={{
           position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: 300,
-          height: 300,
-          translateX: '-50%',
-          translateY: '-50%',
+          left: 0,
+          top: 0,
+          width: 750,
+          height: 974,
         }}
-        list={[{
-          url: 'https://gw-office.alipayobjects.com/a/g/wealthprod/Karas/demo/7y/body.png', // 帧动画图片
-          row: 1, // 图片有几行
-          column: 9, // 图片有几列
-          number: 9, // 总帧数，默认${row} * ${column}，特殊情况下如多行最后一行数量不满传入自定义总数
-        }]}
-        fill={'forwards'}
-        iterations={10}
+        list={[
+          {
+            url: 'https://mdn.alipayobjects.com/huamei_p2sgyr/afts/img/A*ydjaTrbzI3sAAAAAAAAAAAAADgKIAQ/original',
+            row: 4,
+            column: 5,
+          },
+          {
+            url: 'https://mdn.alipayobjects.com/huamei_p2sgyr/afts/img/A*f4rBQbnramkAAAAAAAAAAAAADgKIAQ/original',
+            row: 4,
+            column: 5,
+          },
+          {
+            url: 'https://mdn.alipayobjects.com/huamei_p2sgyr/afts/img/A*Q9ZZQrH5l1QAAAAAAAAAAAAADgKIAQ/original',
+            row: 1,
+            column: 5,
+          },
+        ]}
+        iterations={1000}
         delay={100}
-        duration={500}
-        direction={'alternate'}
+        duration={3500}
         playbackRate={1}
-        autoPlay={true}
+        autoPlay={false}
       />
-    </canvas>,
+    </webgl>,
     '#test'
   );
+  // window.ttt = root.children[0];
+  root.children[0].pauseToFrame(2);
 </script>
 <script src="homunculus.js"></script>
 <script src="yurine.js"></script>
 <script src="sea.js"></script>
-<script src="https://gw.alipayobjects.com/os/lib/karas/0.82.1/index.min.js"></script>
+<script src="../../karas/index.js"></script>
 <script src="../index.js"></script>
 <script>
   seajs.config({

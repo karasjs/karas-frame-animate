@@ -1,6 +1,6 @@
 {
   "name": "karas-frame-animate",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "FrameAnimate component for karas.",
   "maintainers": [
     {
@@ -17,7 +17,7 @@
     "url": "git://github.com/karasjs/karas-frame-animate.git"
   },
   "peerDependencies": {
-    "karas": "^0.79.1"
+    "karas": "^0.85.0"
   },
   "dependencies": {},
   "devDependencies": {
@@ -25,7 +25,7 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.8.7",
     "@rollup/plugin-json": "^4.1.0",
-    "babel-preset-karas": "^7.10.1",
+    "babel-preset-karas": "^7.10.3",
     "rollup": "^2.52.3",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-sourcemaps": "^0.5.0",

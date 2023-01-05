@@ -48,7 +48,8 @@ karas.render(
 * resume() 恢复
 * play() 从头播放
 * stop() 停止并回到第一帧
-* pauseTo(n) 暂停到第n帧
+* pauseTo(n) 暂停到多少ms
+* pauseToFrame(n) 暂停到第n帧
 
 ### get/set
 * duration 播放时长，单位ms，默认`1000`
