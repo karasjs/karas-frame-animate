@@ -262,8 +262,14 @@ class FrameAnimate extends karas.Component {
           return;
         }
         let playCount = Math.floor(currentTime / this.duration);
-        if(playCount >= this.iterations - 1) {
+        if(playCount >= this.iterations) {
           this.pause();
+          let fill = this.fill;
+          if(fill !== 'both' && fill !== 'forwards') {
+            fake.index = undefined;
+            root.__addUpdate(fake, [], CACHE, false, false, null, null);
+            return;
+          }
         }
         currentTime -= playCount * this.duration;
         let alternate = false;

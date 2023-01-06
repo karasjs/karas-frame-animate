@@ -82,7 +82,7 @@ function _get() {
   return _get.apply(this, arguments);
 }
 
-var version = "0.5.0";
+var version = "0.5.1";
 
 var _karas$refresh = karas.refresh,
     CACHE = _karas$refresh.level.CACHE;
@@ -422,8 +422,18 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
 
           var playCount = Math.floor(currentTime / _this4.duration);
 
-          if (playCount >= _this4.iterations - 1) {
+          if (playCount >= _this4.iterations) {
             _this4.pause();
+
+            var fill = _this4.fill;
+
+            if (fill !== 'both' && fill !== 'forwards') {
+              fake.index = undefined;
+
+              root.__addUpdate(fake, [], CACHE, false, false, null, null);
+
+              return;
+            }
           }
 
           currentTime -= playCount * _this4.duration;
