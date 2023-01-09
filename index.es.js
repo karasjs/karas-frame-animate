@@ -82,7 +82,7 @@ function _get() {
   return _get.apply(this, arguments);
 }
 
-var version = "0.5.2";
+var version = "0.5.3";
 
 var _karas$refresh = karas.refresh,
     CACHE = _karas$refresh.level.CACHE;
