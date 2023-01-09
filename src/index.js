@@ -93,7 +93,7 @@ class $ extends karas.Geom {
       inject.measureImg(item.url, res => {
         if(res.success) {
           item.cache = res;
-          if(index === this.lastIndex) {
+          if(index === this.lastIndex && !this.isDestroyed) {
             this.render(renderMode, ctx, dx, dy);
           }
         }
@@ -322,6 +322,18 @@ class FrameAnimate extends karas.Component {
       if(autoPlay) {
         fake.frameAnimate(cb);
       }
+    }
+  }
+
+  componentWillUnmount() {
+    let { list = [] } = this.props;
+    let root = this.__root, renderMode = root.__renderMode;
+    if(renderMode === WEBGL) {
+      list.forEach(item => {
+        if(item.texture) {
+          root.ctx.deleteTexture(item.texture);
+        }
+      });
     }
   }
 

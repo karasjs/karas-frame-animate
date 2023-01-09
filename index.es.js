@@ -82,7 +82,7 @@ function _get() {
   return _get.apply(this, arguments);
 }
 
-var version = "0.5.1";
+var version = "0.5.2";
 
 var _karas$refresh = karas.refresh,
     CACHE = _karas$refresh.level.CACHE;
@@ -195,7 +195,7 @@ var $ = /*#__PURE__*/function (_karas$Geom) {
           if (res.success) {
             item.cache = res;
 
-            if (index === _this2.lastIndex) {
+            if (index === _this2.lastIndex && !_this2.isDestroyed) {
               _this2.render(renderMode, ctx, dx, dy);
             }
           }
@@ -506,6 +506,22 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
       }
     }
   }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      var _this$props$list2 = this.props.list,
+          list = _this$props$list2 === void 0 ? [] : _this$props$list2;
+      var root = this.__root,
+          renderMode = root.__renderMode;
+
+      if (renderMode === WEBGL) {
+        list.forEach(function (item) {
+          if (item.texture) {
+            root.ctx.deleteTexture(item.texture);
+          }
+        });
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
       return karas.createElement("div", null, karas.createElement($, {
@@ -545,8 +561,8 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
     key: "pauseToFrame",
     value: function pauseToFrame() {
       var n = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-      var _this$props$list2 = this.props.list,
-          list = _this$props$list2 === void 0 ? [] : _this$props$list2;
+      var _this$props$list3 = this.props.list,
+          list = _this$props$list3 === void 0 ? [] : _this$props$list3;
 
       for (var i = 0, len = list.length; i < len; i++) {
         var item = list[i];
