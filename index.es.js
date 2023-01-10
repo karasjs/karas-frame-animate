@@ -82,7 +82,7 @@ function _get() {
   return _get.apply(this, arguments);
 }
 
-var version = "0.5.3";
+var version = "0.5.4";
 
 var _karas$refresh = karas.refresh,
     CACHE = _karas$refresh.level.CACHE;
@@ -528,7 +528,9 @@ var FrameAnimate = /*#__PURE__*/function (_karas$Component) {
         ref: "fake",
         style: {
           width: '100%',
-          height: '100%'
+          height: '100%',
+          fill: 'none',
+          stroke: 0
         },
         fill: this.fill,
         list: this.list,

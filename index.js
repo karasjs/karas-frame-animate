@@ -90,7 +90,7 @@
     return _get.apply(this, arguments);
   }
 
-  var version = "0.5.3";
+  var version = "0.5.4";
 
   var _karas$refresh = karas__default["default"].refresh,
       CACHE = _karas$refresh.level.CACHE;
@@ -536,7 +536,9 @@
           ref: "fake",
           style: {
             width: '100%',
-            height: '100%'
+            height: '100%',
+            fill: 'none',
+            stroke: 0
           },
           fill: this.fill,
           list: this.list,

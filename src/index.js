@@ -342,6 +342,8 @@ class FrameAnimate extends karas.Component {
       <$ ref="fake" style={{
         width: '100%',
         height: '100%',
+        fill: 'none',
+        stroke: 0,
       }} fill={this.fill} list={this.list} direction={this.direction}
          delay={this.delay} duration={this.duration} iterations={this.iterations}/>
     </div>;
